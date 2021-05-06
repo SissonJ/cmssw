@@ -6,6 +6,7 @@
 
 // Original Author: Marcel Schneider
 
+#include <iostream>
 #include "DQM/SiPixelPhase1Common/interface/SiPixelPhase1Base.h"
 #include "DataFormats/SiPixelCluster/interface/SiPixelCluster.h"
 #include "DataFormats/SiStripCluster/interface/SiStripCluster.h"
@@ -112,6 +113,7 @@ namespace {
         }
         histo[READOUT_CHARGE].fill(double(cluster.charge()), id, &iEvent, col, row);
         histo[CHARGE].fill(double(cluster.charge()), id, &iEvent, col, row);
+	std::cout<<"SiPixelPhaseOne is calling histo[CHARGE].fill"<<std::endl;
         histo[SIZE].fill(double(cluster.size()), id, &iEvent, col, row);
         histo[SIZEX].fill(double(cluster.sizeX()), id, &iEvent, col, row);
         histo[SIZEY].fill(double(cluster.sizeY()), id, &iEvent, col, row);

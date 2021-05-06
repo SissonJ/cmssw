@@ -91,6 +91,7 @@ siPixelPhase1OnlineDQM_harvesting = cms.Sequence(
  + SiPixelPhase1TrackResidualsHarvester
  + RunQTests_online
  + SiPixelPhase1SummaryOnline
+ + SiPixelPhase1Extras
 # + SiPixelPhase1GeometryDebugHarvester
 )
 
@@ -138,4 +139,5 @@ siPixelPhase1OnlineDQM_source_pprun = cms.Sequence(
 siPixelPhase1OnlineDQM_timing_harvesting = siPixelPhase1OnlineDQM_harvesting.copyAndExclude([
  RunQTests_online,
  SiPixelPhase1SummaryOnline,
+ SiPixelPhase1Extras,
 ])

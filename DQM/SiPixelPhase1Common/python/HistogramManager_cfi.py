@@ -152,6 +152,21 @@ StandardSpecifications1D = [
 ]
 
 StandardSpecificationTrend = [
+    #ADDED BY ME - JACK SISSON **
+#    Specification(PerModule).groupBy("PXBarrel/Lumisection")
+#       	 	   .reduce("COUNT")
+#		   .groupBy("PXBarrel","EXTEND_X")
+#		   .save(),
+ #    Specification(PerModule).groupBy("PXBarrel/Lumisection")
+#                   .reduce("COUNT")
+ #                  .groupBy("PXBarrel", "EXTEND_X")
+#                   .save(),
+#    Specification(PerModule).groupBy("PXForward/Lumisection")
+#                   .reduce("COUNT")
+#                   .groupBy("PXForward", "EXTEND_X")
+#                   .save(),
+
+    #END OF ADD **
     Specification(PerModule).groupBy("PXBarrel/Lumisection")
                    .reduce("MEAN")
                    .groupBy("PXBarrel", "EXTEND_X")
@@ -310,6 +325,28 @@ StandardSpecificationInclusive_Num = [#to count inclusively objects in substruct
 ]
 
 StandardSpecificationTrend_Num = [
+    #ADDED BY ME - JACK SISSON **
+    Specification(IsOffline).groupBy("PXBarrel/Lumisection")
+                          .reduce("MEAN")
+                  .groupBy("PXBarrel","EXTEND_X")
+                  .save(),
+    Specification(IsOffline).groupBy("PXBarrel/Lumiblock")
+                          .reduce("MEAN")
+                  .groupBy("PXBarrel","EXTEND_X")
+                  .save(),
+   Specification(PerModule).groupBy("PXBarrel/PXLayer/PXModule/Lumisection")
+                          .reduce("MEAN")
+                  .groupBy("PXBarrel/PXLayer/PXModule","EXTEND_X")
+		  .groupBy("PXBarrel/PXLayer","EXTEND_Y")
+                  .save(),
+    Specification(IsOffline).groupBy("PXBarrel/PXLayer/PXModule/Lumisection")
+                          .reduce("MEAN")
+                  .groupBy("PXBarrel/PXLayer/PXModule","EXTEND_X")
+                  .groupBy("PXBarrel/PXLayer","EXTEND_Y")
+                  .save(),
+
+
+    #END OF ADD
     Specification(PerModule).groupBy("PXBarrel/PXLayer/Event")
                    .reduce("COUNT")
                    .groupBy("PXBarrel/PXLayer/Lumisection")
