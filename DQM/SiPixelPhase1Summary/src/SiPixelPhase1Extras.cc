@@ -67,58 +67,55 @@ void SiPixelPhase1Extras::beginRun(edm::Run const& run, edm::EventSetup const& e
 //------------------------------------------------------------------
 void SiPixelPhase1Extras::dqmEndJob(DQMStore::IBooker& iBooker, DQMStore::IGetter& iGetter) {
 
-  /// put in here the booking of histograms -- don't need a separate function I don't think!
-
-  /// put in here the filling of those histograms
-  /// can use "effFolderName_" and "vtxFolderName_" as variables
-  //
-
   iBooker.setCurrentFolder(effFolderName_);
 
-  //Book the new histos
-  MonitorElement * eff_v_vtx_barrel = iBooker.book2D("hitefficiency_per_meanNvtx_per_PXLayer_PXBarrel", "hitefficiency_per_meanNvtx_per_PXLayer_PXBarrel; meanNvtx; PXLayer",101,-.5,100.5,3,.5,3.5);
+  // Book the new histos
+  MonitorElement * eff_v_vtx_barrel = iBooker.book2D("hitefficiency_per_meanNvtx_per_PXLayer_PXBarrel", "hitefficiency_per_meanNvtx_per_PXLayer_PXBarrel; meanNvtx; PXLayer",500,0,100,3,.5,3.5);
 
-  MonitorElement * eff_v_vtx_forward = iBooker.book2D("hitefficiency_per_meanNvtx_per_PXDisk_PXForward", "hitefficiency_per_meanNvtx_per_PXDisk_PXForward; meanNvtx; PXDisk",101,-.5,100.5,7,-3.5,3.5);
+  MonitorElement * eff_v_vtx_forward = iBooker.book2D("hitefficiency_per_meanNvtx_per_PXDisk_PXForward", "hitefficiency_per_meanNvtx_per_PXDisk_PXForward; meanNvtx; PXDisk",500,0,100,7,-3.5,3.5);
   
-  //Get the existing histos
+  // Get the existing histos
   MonitorElement * vtx_v_lumi = iGetter.get(vtxFolderName_ + "/NumberOfGoodPVtxVsLS_GenTk");
   
   MonitorElement * eff_v_lumi_barrel = iGetter.get(effFolderName_ + "/hitefficiency_per_Lumisection_per_PXLayer_PXBarrel");
 
   MonitorElement * eff_v_lumi_forward = iGetter.get(effFolderName_ + "/hitefficiency_per_Lumisection_per_PXDisk_PXForward");
   
-  //initialize variables
+  // Initialize variables
   int numLumi = int(vtx_v_lumi->getTH1()->GetNbinsX());
-  int nvtx = 0;
+  double nvtx = 0.0;
   double eff = 0.0;
+  int binNum = 0;
   
-  //For loop to loop through lumisections
+  // For loop to loop through lumisections
   for(int iLumi = 1; iLumi<numLumi-1; iLumi++)
   {
-    //get the meanNvtx for each lumi
-    nvtx = int(vtx_v_lumi->getTH1()->GetBinContent(iLumi));
+    // Get the meanNvtx for each lumi
+    nvtx = vtx_v_lumi->getTH1()->GetBinContent(iLumi);
     if(nvtx !=0)
     {
-      std::cout<<nvtx<<endl;
-      std::cout<<"lumi: "<<iLumi<<endl;
-      //loop through the layers
+      // Get bin for forward
+      binNum = eff_v_vtx_forward->getTH2F()->FindBin(nvtx); 
+      // Loop through the layers
       for(int iLayer = 1; iLayer<8; iLayer++)
       {
-        //get the eff at the lumisection and layer
+        // Get the eff at the lumisection and layer
         eff = eff_v_lumi_forward->getTProfile2D()->GetBinContent(iLumi-1,iLayer);
-	std::cout<<"disk eff: "<<eff<<endl;
-        //set the efficiency in the new histo
-        eff_v_vtx_forward->getTH2F()->SetBinContent(nvtx+1, iLayer, eff);
+	
+        // Set the efficiency in the new histo
+        eff_v_vtx_forward->getTH2F()->SetBinContent(binNum, iLayer, eff);
       }
 
-      //loop through the layers
+      // Get bin for barrel
+      binNum = eff_v_vtx_barrel->getTH2F()->FindBin(nvtx);
+      // Loop through the layers
       for(int iLayer = 1; iLayer<5; iLayer++)
       {
-        //get the efficiency for each lumi at each layer
+        // Get the efficiency for each lumi at each layer
         eff = eff_v_lumi_barrel->getTProfile2D()->GetBinContent(iLumi-1, iLayer);
-	std::cout<<"barrel eff: "<<eff<<endl;
-        //set the efficiency
-        eff_v_vtx_barrel->getTH2F()->SetBinContent(nvtx+1, iLayer, eff);
+	
+        // Set the efficiency
+        eff_v_vtx_barrel->getTH2F()->SetBinContent(binNum, iLayer, eff);
       }
     }
   }
