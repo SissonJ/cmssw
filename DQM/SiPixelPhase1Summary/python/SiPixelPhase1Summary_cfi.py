@@ -86,11 +86,6 @@ SiPixelPhase1SummaryCosmics = DQMEDHarvester("SiPixelPhase1Summary",
         DeadROCErrorThreshold = cms.vdouble(0.2,0.2,0.2,0.2,0.2,0.2)
 )
 
-SiPixelPhase1Extras = DQMEDHarvester("SiPixelPhase1Extras",
-                                     EffFolderName = cms.string('PixelPhase1/Tracks/'),
-                                     VtxFolderName = cms.string('Tracking/TrackParameters/generalTracks/GeneralProperties/'),
-)
-
 
 from DQMServices.Core.DQMQualityTester import DQMQualityTester
 ADCQTester = DQMQualityTester(
