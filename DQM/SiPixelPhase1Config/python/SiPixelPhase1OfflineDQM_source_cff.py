@@ -19,7 +19,7 @@ from DQM.SiPixelPhase1Track.SiPixelPhase1TrackEfficiency_cfi import *
 from DQM.SiPixelPhase1Common.SiPixelPhase1RawData_cfi import *
 #Summary maps
 from DQM.SiPixelPhase1Summary.SiPixelPhase1Summary_cfi import *
-from DQM.SiPixelPhase1Summary.SiPixelPhase1Extras_cfi import *
+from DQM.SiPixelPhase1Track.SiPixelPhase1Extras_cfi import *
 
 PerModule.enabled = False
 IsOffline.enabled=True

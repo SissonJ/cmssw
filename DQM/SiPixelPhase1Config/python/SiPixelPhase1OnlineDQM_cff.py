@@ -67,7 +67,7 @@ from DQM.SiPixelPhase1Common.SiPixelPhase1GeometryDebug_cfi import *
 
 #Summary maps
 from DQM.SiPixelPhase1Summary.SiPixelPhase1Summary_cfi import *
-from DQM.SiPixelPhase1Summary.SiPixelPhase1Extras_cfi import *
+from DQM.SiPixelPhase1Track.SiPixelPhase1Extras_cfi import *
 
 # Track cluster                                                                                                                                                                            
 from DQM.SiPixelPhase1Track.SiPixelPhase1TrackClusters_cfi import *
