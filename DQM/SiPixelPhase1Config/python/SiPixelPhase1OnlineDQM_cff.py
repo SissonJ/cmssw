@@ -67,15 +67,10 @@ from DQM.SiPixelPhase1Common.SiPixelPhase1GeometryDebug_cfi import *
 
 #Summary maps
 from DQM.SiPixelPhase1Summary.SiPixelPhase1Summary_cfi import *
+from DQM.SiPixelPhase1Track.SiPixelPhase1EfficiencyExtras_cfi import *
 
 # Track cluster                                                                                                                                                                            
 from DQM.SiPixelPhase1Track.SiPixelPhase1TrackClusters_cfi import *
-SiPixelPhase1TrackClustersOnTrackCorrCharge.enabled=cms.bool(False)
-SiPixelPhase1TrackTemplateCorr.enabled=cms.bool(False)
-SiPixelPhase1TrackClustersOnTrackCorrChargeOuter.enabled=cms.bool(False)
-SiPixelPhase1TrackTemplateCorrOuter.enabled=cms.bool(False)
-SiPixelPhase1TrackClustersOnTrackCorrChargeInner.enabled=cms.bool(False)
-SiPixelPhase1TrackTemplateCorrInner.enabled=cms.bool(False)
 from DQM.SiPixelPhase1Track.SiPixelPhase1TrackResiduals_cfi import *
 
 siPixelPhase1OnlineDQM_source = cms.Sequence(
@@ -97,6 +92,7 @@ siPixelPhase1OnlineDQM_harvesting = cms.Sequence(
  + SiPixelPhase1TrackResidualsHarvester
  + RunQTests_online
  + SiPixelPhase1SummaryOnline
+ + SiPixelPhase1EfficiencyExtras
 # + SiPixelPhase1GeometryDebugHarvester
 )
 
@@ -144,4 +140,5 @@ siPixelPhase1OnlineDQM_source_pprun = cms.Sequence(
 siPixelPhase1OnlineDQM_timing_harvesting = siPixelPhase1OnlineDQM_harvesting.copyAndExclude([
  RunQTests_online,
  SiPixelPhase1SummaryOnline,
+ SiPixelPhase1EfficiencyExtras,
 ])
