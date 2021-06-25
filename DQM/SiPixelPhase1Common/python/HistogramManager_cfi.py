@@ -49,9 +49,6 @@ DefaultHisto = cms.PSet(
   # Setting this to False hides all plots of this HistogramManager. It does not even record any data.
   enabled = cms.bool(True),
 
-  # If this is set to False Overflows will not be used for statistics evaluation (i.e. Mean,RMS)
-  statsOverflows = cms.bool(True),
-
   # a.k.a. online harvesting. Might be useful in offline for custom harvesting,
   # but the main purpose is online, where this is on by default.
   perLumiHarvesting = cms.bool(False),
@@ -155,6 +152,21 @@ StandardSpecifications1D = [
 ]
 
 StandardSpecificationTrend = [
+    #ADDED BY ME - JACK SISSON **
+#    Specification(PerModule).groupBy("PXBarrel/Lumisection")
+#       	 	   .reduce("COUNT")
+#		   .groupBy("PXBarrel","EXTEND_X")
+#		   .save(),
+ #    Specification(PerModule).groupBy("PXBarrel/Lumisection")
+#                   .reduce("COUNT")
+ #                  .groupBy("PXBarrel", "EXTEND_X")
+#                   .save(),
+#    Specification(PerModule).groupBy("PXForward/Lumisection")
+#                   .reduce("COUNT")
+#                   .groupBy("PXForward", "EXTEND_X")
+#                   .save(),
+
+    #END OF ADD **
     Specification(PerModule).groupBy("PXBarrel/Lumisection")
                    .reduce("MEAN")
                    .groupBy("PXBarrel", "EXTEND_X")
@@ -313,6 +325,28 @@ StandardSpecificationInclusive_Num = [#to count inclusively objects in substruct
 ]
 
 StandardSpecificationTrend_Num = [
+    #ADDED BY ME - JACK SISSON **
+    Specification(IsOffline).groupBy("PXBarrel/Lumisection")
+                          .reduce("MEAN")
+                  .groupBy("PXBarrel","EXTEND_X")
+                  .save(),
+    Specification(IsOffline).groupBy("PXBarrel/Lumiblock")
+                          .reduce("MEAN")
+                  .groupBy("PXBarrel","EXTEND_X")
+                  .save(),
+   Specification(PerModule).groupBy("PXBarrel/PXLayer/PXModule/Lumisection")
+                          .reduce("MEAN")
+                  .groupBy("PXBarrel/PXLayer/PXModule","EXTEND_X")
+		  .groupBy("PXBarrel/PXLayer","EXTEND_Y")
+                  .save(),
+    Specification(IsOffline).groupBy("PXBarrel/PXLayer/PXModule/Lumisection")
+                          .reduce("MEAN")
+                  .groupBy("PXBarrel/PXLayer/PXModule","EXTEND_X")
+                  .groupBy("PXBarrel/PXLayer","EXTEND_Y")
+                  .save(),
+
+
+    #END OF ADD
     Specification(PerModule).groupBy("PXBarrel/PXLayer/Event")
                    .reduce("COUNT")
                    .groupBy("PXBarrel/PXLayer/Lumisection")
