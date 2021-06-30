@@ -3,7 +3,6 @@
 // Package:     SiPixelPhase1Common
 // Class  :     HistogramManager
 //
-#include <iostream>
 #include "DQM/SiPixelPhase1Common/interface/HistogramManager.h"
 
 #include <sstream>
@@ -47,7 +46,6 @@ HistogramManager::HistogramManager(const edm::ParameterSet& iconfig, GeometryInt
 }
 
 void HistogramManager::addSpec(SummationSpecification spec) {
-  spec.dump(std::cout , geometryInterface);
   specs.push_back(spec);
   tables.push_back(Table());
   counters.push_back(Table());
@@ -105,11 +103,8 @@ void HistogramManager::fill(double x, double y, DetId sourceModule, const edm::E
     // a valid cached result.
     if (fastpath[i]) {
       if (s.steps[0].type == SummationStep::COUNT) {
-	std::cout<<"Fill method landed on line 106"<<std::endl;
-	std::cout<<"Fastpath count is now equal to "<< fastpath[i]->count + 1<<std::endl;
         fastpath[i]->count++;
       } else {
-	std::cout<<"Fill method moved on to FillInternal"<<std::endl;
         fillInternal(x, y, this->dimensions, iq, s.steps.begin() + 1, s.steps.end(), *(fastpath[i]));
       }
     }
@@ -193,7 +188,6 @@ void HistogramManager::fillInternal(double x,
 // This is only used for ndigis-like counting. It could be more optimized, but
 // is probably fine for a per-event thing.
 void HistogramManager::executePerEventHarvesting(const edm::Event* sourceEvent) {
-  std::cout << "Running the executePerEventHarvesting function" << std::endl;
   if (!enabled)
     return;
   for (unsigned int i = 0; i < specs.size(); i++) {
@@ -235,7 +229,6 @@ std::pair<std::string, std::string> HistogramManager::makePathName(SummationSpec
                                                                    SummationStep const* upto) {
   std::ostringstream dir("");
   std::string suffix = "";
-  //std::cout << "Running the makePathName function" << std::endl;
   // we omit the last value here, to get all disks next to each other etc.
   if (!significantvalues.empty()) {
     for (auto it = significantvalues.begin(); it != (significantvalues.end() - 1); ++it) {
@@ -281,7 +274,6 @@ std::pair<std::string, std::string> HistogramManager::makePathName(SummationSpec
 }
 
 void HistogramManager::book(DQMStore::IBooker& iBooker, edm::EventSetup const& iSetup) {
- std::cout << "Running the book function" << std::endl; 
  if (!geometryInterface.loaded()) {
     geometryInterface.load(iSetup);
   }
@@ -534,7 +526,6 @@ void HistogramManager::executePerLumiHarvesting(DQMStore::IBooker& iBooker,
                                                 DQMStore::IGetter& iGetter,
                                                 edm::LuminosityBlock const& lumiBlock,
                                                 edm::EventSetup const& iSetup) {
-// std::cout << "Running the executePerLumiHarvesting function" << std::endl; 
  if (!enabled)
     return;
   // this should also give us the GeometryInterface for offline, though it is a
@@ -585,7 +576,6 @@ void HistogramManager::executeGroupBy(SummationStep const& step,
                                       Table& t,
                                       DQMStore::IBooker& iBooker,
                                       SummationSpecification const& s) {
- //std::cout << "Running the executeGroupBy function" << std::endl; 
  // Simple regrouping, sum histos if they end up in the same place.
   Table out;
   GeometryInterface::Values significantvalues;
@@ -620,8 +610,7 @@ void HistogramManager::executeExtend(SummationStep const& step,
                                      std::string const& reduce_type,
                                      DQMStore::IBooker& iBooker,
                                      SummationSpecification const& s) {
- //std::cout << "Running the executeExtend function" << std::endl; 
- // For the moment only X.
+  // For the moment only X.
   // first pass determines the range.
   std::map<GeometryInterface::Values, int> nbins;
   // separators collects meta info for the render plugin about the boundaries.
@@ -701,7 +690,6 @@ void HistogramManager::executeExtend(SummationStep const& step,
 }
 
 void HistogramManager::executeHarvesting(DQMStore::IBooker& iBooker, DQMStore::IGetter& iGetter) {
- //std::cout << "Running the executeHarvesting function" << std::endl; 
  if (!enabled)
     return;
   // Debug output
