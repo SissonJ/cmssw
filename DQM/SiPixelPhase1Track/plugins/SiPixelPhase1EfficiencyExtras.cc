@@ -45,9 +45,9 @@
 // DataFormats
 #include "DataFormats/DetId/interface/DetId.h"
 #include "DataFormats/SiPixelDetId/interface/PixelSubdetector.h"
-#include "DataFormats/SiPixelDetId/interface/PixelBarrelName.h"
+//#include "DataFormats/SiPixelDetId/interface/PixelBarrelName.h"
 #include "DataFormats/SiPixelDetId/interface/PixelBarrelNameUpgrade.h"
-#include "DataFormats/SiPixelDetId/interface/PixelEndcapName.h"
+//#include "DataFormats/SiPixelDetId/interface/PixelEndcapName.h"
 #include "DataFormats/SiPixelDetId/interface/PixelEndcapNameUpgrade.h"
 //
 #include <string>
@@ -113,6 +113,20 @@ void SiPixelPhase1EfficiencyExtras::dqmEndJob(DQMStore::IBooker& iBooker, DQMSto
   MonitorElement * eff_v_lumi_forward = iGetter.get(effFolderName_ + "/hitefficiency_per_Lumisection_per_PXDisk_PXForward");
   
   MonitorElement * eff_v_lumi_barrel = iGetter.get(effFolderName_ + "/hitefficiency_per_Lumisection_per_PXLayer_PXBarrel");
+
+  if(!vtx_v_lumi)
+  {
+    edm::LogWarning("SiPixelPhase1EfficiencyExtras") << "no NumberOfGoodPVtxVsLS_GenTK ME is available in " << vtxFolderName_ << std::endl;
+    return;
+  } else if(!scalLumi_v_lumi)
+  {  
+    edm::LogWarning("SiPixelPhase1EfficiencyExtras") << "no lumiVsLS ME is available in " << instLumiFolderName_ << std::endl;
+    return;
+  }
+
+
+
+
 
   //Get the max value of inst lumi for plot
   int yMax2 = scalLumi_v_lumi->getTProfile()->GetMaximum();
