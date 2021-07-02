@@ -95,7 +95,6 @@ SiPixelPhase1TrackEfficiencyEfficiency = SiPixelPhase1TrackEfficiencyValid.clone
                    .groupBy("PXForward", "EXTEND_X")
                    .save(),
 
-    # added by me
     Specification(PerLayer2D)
 			.groupBy("PXBarrel/PXLayer/Lumisection")
 			.groupBy("PXBarrel/PXLayer", "EXTEND_X")
@@ -108,14 +107,6 @@ SiPixelPhase1TrackEfficiencyEfficiency = SiPixelPhase1TrackEfficiencyValid.clone
                         .groupBy("PXForward", "EXTEND_Y")
                         .reduce("MEAN")
                         .save(),
-#    Specification(PerLayer2D)
-#                        .groupBy("PXBarrel/PXLayer/Vertices")
-#                        .groupBy("PXBarrel/PXLayer", "EXTEND_X")
-#                        .groupBy("PXBarrel", "EXTEND_Y")
-#                        .reduce("MEAN")
-#                        .save(),
-
-    #StandardSpecificationPixelmapProfile    
   )
 )
 
