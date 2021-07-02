@@ -45,9 +45,7 @@
 // DataFormats
 #include "DataFormats/DetId/interface/DetId.h"
 #include "DataFormats/SiPixelDetId/interface/PixelSubdetector.h"
-//#include "DataFormats/SiPixelDetId/interface/PixelBarrelName.h"
 #include "DataFormats/SiPixelDetId/interface/PixelBarrelNameUpgrade.h"
-//#include "DataFormats/SiPixelDetId/interface/PixelEndcapName.h"
 #include "DataFormats/SiPixelDetId/interface/PixelEndcapNameUpgrade.h"
 //
 #include <string>
