@@ -541,7 +541,6 @@ void HistogramManager::executePerLumiHarvesting(DQMStore::IBooker& iBooker,
 }
 
 void HistogramManager::loadFromDQMStore(SummationSpecification& s, Table& t, DQMStore::IGetter& iGetter) {
-  //std::cout << "Running the loadFromDQMStore function" << std::endl;
   t.clear();
   GeometryInterface::Values significantvalues;
   auto firststep = s.steps.begin();
