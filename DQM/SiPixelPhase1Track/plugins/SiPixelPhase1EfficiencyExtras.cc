@@ -5,14 +5,14 @@
 //
 /**\class 
 
- Description: Create the Phsae 1 pixel summary map
+ Description: Create the Phase 1 extra efficiency trend plots
 
  Implementation:
      <Notes on implementation>
 */
 //
-// Original Author:  Duncan Leggat
-//         Created:  5th December 2016
+// Original Author:  Jack Sisson, Julie Hogan
+//         Created:  7 July, 2021
 //
 //
 
