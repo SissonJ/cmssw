@@ -35,7 +35,7 @@ HistogramManager::HistogramManager(const edm::ParameterSet& iconfig, GeometryInt
       range_y_min(iconfig.getParameter<double>("range_y_min")),
       range_y_max(iconfig.getParameter<double>("range_y_max")) {
   auto spec_configs = iconfig.getParameter<edm::VParameterSet>("specs");
-  for (auto spec : spec_configs) {
+  for (const auto& spec : spec_configs) {
     // this would fit better in SummationSpecification(...), but it has to
     // happen here.
     auto conf = spec.getParameter<edm::ParameterSet>("conf");
@@ -274,7 +274,7 @@ std::pair<std::string, std::string> HistogramManager::makePathName(SummationSpec
 }
 
 void HistogramManager::book(DQMStore::IBooker& iBooker, edm::EventSetup const& iSetup) {
- if (!geometryInterface.loaded()) {
+  if (!geometryInterface.loaded()) {
     geometryInterface.load(iSetup);
   }
   if (!enabled)
@@ -526,7 +526,7 @@ void HistogramManager::executePerLumiHarvesting(DQMStore::IBooker& iBooker,
                                                 DQMStore::IGetter& iGetter,
                                                 edm::LuminosityBlock const& lumiBlock,
                                                 edm::EventSetup const& iSetup) {
- if (!enabled)
+  if (!enabled)
     return;
   // this should also give us the GeometryInterface for offline, though it is a
   // bit dirty and might explode.
@@ -541,8 +541,8 @@ void HistogramManager::executePerLumiHarvesting(DQMStore::IBooker& iBooker,
 }
 
 void HistogramManager::loadFromDQMStore(SummationSpecification& s, Table& t, DQMStore::IGetter& iGetter) {
- //std::cout << "Running the loadFromDQMStore function" << std::endl; 
- t.clear();
+  //std::cout << "Running the loadFromDQMStore function" << std::endl;
+  t.clear();
   GeometryInterface::Values significantvalues;
   auto firststep = s.steps.begin();
   if (firststep->type != SummationStep::GROUPBY)
@@ -576,7 +576,7 @@ void HistogramManager::executeGroupBy(SummationStep const& step,
                                       Table& t,
                                       DQMStore::IBooker& iBooker,
                                       SummationSpecification const& s) {
- // Simple regrouping, sum histos if they end up in the same place.
+  // Simple regrouping, sum histos if they end up in the same place.
   Table out;
   GeometryInterface::Values significantvalues;
   for (auto& e : t) {
@@ -690,7 +690,7 @@ void HistogramManager::executeExtend(SummationStep const& step,
 }
 
 void HistogramManager::executeHarvesting(DQMStore::IBooker& iBooker, DQMStore::IGetter& iGetter) {
- if (!enabled)
+  if (!enabled)
     return;
   // Debug output
   for (auto& s : specs) {
