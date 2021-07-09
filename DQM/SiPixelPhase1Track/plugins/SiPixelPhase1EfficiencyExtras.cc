@@ -166,8 +166,8 @@ void SiPixelPhase1EfficiencyExtras::dqmEndJob(DQMStore::IBooker& iBooker, DQMSto
                      3.5);
 
   //initialize variables
-  int numLumiNvtx = int(vtx_v_lumi->getTH1()->GetNbinsX());
-  int numLumiScal = int(scalLumi_v_lumi->getTProfile()->GetNbinsX());
+  int numLumiNvtx = int(vtx_v_lumi->getNbinsX());
+  int numLumiScal = int(scalLumi_v_lumi->getNbinsX());
   double nvtx = 0.0;
   double scalLumi = 0.0;
   double eff = 0.0;
@@ -177,8 +177,8 @@ void SiPixelPhase1EfficiencyExtras::dqmEndJob(DQMStore::IBooker& iBooker, DQMSto
   //For loop to loop through lumisections
   for (int iLumi = 1; iLumi < numLumiNvtx - 1; iLumi++) {
     //get the meanNvtx and inst lumi for each lumi
-    nvtx = vtx_v_lumi->getTH1()->GetBinContent(iLumi);
-    scalLumi = scalLumi_v_lumi->getTProfile()->GetBinContent(iLumi);
+    nvtx = vtx_v_lumi->getBinContent(iLumi);
+    scalLumi = scalLumi_v_lumi->getBinContent(iLumi);
 
     //Filter out useless iterations
     if (nvtx != 0 || scalLumi != 0) {
@@ -189,30 +189,30 @@ void SiPixelPhase1EfficiencyExtras::dqmEndJob(DQMStore::IBooker& iBooker, DQMSto
       //loop through the layers
       for (int iLayer = 1; iLayer < 8; iLayer++) {
         //get the eff at the lumisection and layer
-        eff = eff_v_lumi_forward->getTProfile2D()->GetBinContent(iLumi - 1, iLayer);
+        eff = eff_v_lumi_forward->getBinContent(iLumi - 1, iLayer);
 
         //set the efficiency in the new histo
-        eff_v_vtx_forward->getTH2F()->SetBinContent(binNumVtx, iLayer, eff);
+        eff_v_vtx_forward->setBinContent(binNumVtx, iLayer, eff);
 
         //Filter iLumi to be smaller than the max x value of inst lumi
         if (iLumi <= numLumiScal) {
           //set the efficiency in the new histo
-          eff_v_scalLumi_forward->getTH2F()->SetBinContent(binNumScal, iLayer, eff);
+          eff_v_scalLumi_forward->setBinContent(binNumScal, iLayer, eff);
         }
       }
 
       //loop through the layers
       for (int iLayer = 1; iLayer < 5; iLayer++) {
         //get the efficiency for each lumi at each layer
-        eff = eff_v_lumi_barrel->getTProfile2D()->GetBinContent(iLumi - 1, iLayer);
+        eff = eff_v_lumi_barrel->getBinContent(iLumi - 1, iLayer);
 
         //set the efficiency
-        eff_v_vtx_barrel->getTH2F()->SetBinContent(binNumVtx, iLayer, eff);
+        eff_v_vtx_barrel->setBinContent(binNumVtx, iLayer, eff);
 
         //Filter iLumi to be smaller than the max x value of inst lumi
         if (iLumi <= numLumiScal) {
           //set the efficiency in the new histo
-          eff_v_scalLumi_barrel->getTH2F()->SetBinContent(binNumScal, iLayer, eff);
+          eff_v_scalLumi_barrel->setBinContent(binNumScal, iLayer, eff);
         }
       }
     }
