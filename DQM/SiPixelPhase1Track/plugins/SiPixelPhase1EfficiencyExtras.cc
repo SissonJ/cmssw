@@ -62,9 +62,6 @@ public:
   explicit SiPixelPhase1EfficiencyExtras(const edm::ParameterSet& conf);
   ~SiPixelPhase1EfficiencyExtras() override;
 
-  //       virtual void analyze(const edm::Event&, const edm::EventSetup&);
-  //         //void dqmBeginRun(const edm::Run&, edm::EventSetup const&) ;
-  //           //virtual void bookHistograms(DQMStore::IBooker &, edm::Run const &, edm::EventSetup const &) override;
 protected:
   void beginRun(edm::Run const& run, edm::EventSetup const& eSetup) override;
 
