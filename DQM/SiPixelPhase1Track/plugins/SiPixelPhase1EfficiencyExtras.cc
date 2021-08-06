@@ -110,19 +110,17 @@ void SiPixelPhase1EfficiencyExtras::dqmEndJob(DQMStore::IBooker& iBooker, DQMSto
   MonitorElement* eff_v_lumi_barrel =
       iGetter.get(effFolderName_ + "/hitefficiency_per_Lumisection_per_PXLayer_PXBarrel");
 
-  //set up some booleans that will tell us which graphs to create  
+  //set up some booleans that will tell us which graphs to create
   bool createNvtx = true;
   bool createInstLumi = true;
 
   //check which of the MEs exist and respond appropriately
-  if (!eff_v_lumi_forward)
-  {
+  if (!eff_v_lumi_forward) {
     edm::LogWarning("SiPixelPhase1EfficiencyExtras")
         << "no hitefficiency_per_Lumisection_per_PXDisk_PXForward ME is available in " << effFolderName_ << std::endl;
     return;
   }
-  if (!eff_v_lumi_barrel)
-  {
+  if (!eff_v_lumi_barrel) {
     edm::LogWarning("SiPixelPhase1EfficiencyExtras")
         << "no hitefficiency_per_Lumisection_per_PXLayer_PXBarrel ME is available in " << effFolderName_ << std::endl;
     return;
@@ -139,43 +137,41 @@ void SiPixelPhase1EfficiencyExtras::dqmEndJob(DQMStore::IBooker& iBooker, DQMSto
   }
 
   //If the existing MEs are empty, set the boolean to skip booking
-  if(vtx_v_lumi && vtx_v_lumi->getEntries() == 0)
+  if (vtx_v_lumi && vtx_v_lumi->getEntries() == 0)
     createNvtx = false;
-  if(scalLumi_v_lumi && scalLumi_v_lumi->getEntries() == 0)
+  if (scalLumi_v_lumi && scalLumi_v_lumi->getEntries() == 0)
     createInstLumi = false;
 
   double eff = 0.0;
 
   //Will pass if nvtx ME exists and is not empty
-  if(createNvtx)
-  {
+  if (createNvtx) {
     //Book new histos
     MonitorElement* eff_v_vtx_barrel =
-      iBooker.book2D("hitefficiency_per_meanNvtx_per_PXLayer_PXBarrel",
-                     "hitefficiency_per_meanNvtx_per_PXLayer_PXBarrel; meanNvtx; PXLayer",
-                     500,
-                     0,
-                     100,
-                     3,
-                     .5,
-                     3.5);
+        iBooker.book2D("hitefficiency_per_meanNvtx_per_PXLayer_PXBarrel",
+                       "hitefficiency_per_meanNvtx_per_PXLayer_PXBarrel; meanNvtx; PXLayer",
+                       500,
+                       0,
+                       100,
+                       3,
+                       .5,
+                       3.5);
 
     MonitorElement* eff_v_vtx_forward =
-      iBooker.book2D("hitefficiency_per_meanNvtx_per_PXDisk_PXForward",
-                     "hitefficiency_per_meanNvtx_per_PXDisk_PXForward; meanNvtx; PXDisk",
-                     500,
-                     0,
-                     100,
-                     7,
-                     -3.5,
-                     3.5);
-
+        iBooker.book2D("hitefficiency_per_meanNvtx_per_PXDisk_PXForward",
+                       "hitefficiency_per_meanNvtx_per_PXDisk_PXForward; meanNvtx; PXDisk",
+                       500,
+                       0,
+                       100,
+                       7,
+                       -3.5,
+                       3.5);
 
     //initialize variables
     int numLumiNvtx = int(vtx_v_lumi->getNbinsX());
     double nvtx = 0.0;
     int binNumVtx = 0;
-  
+
     //For loop to loop through lumisections
     for (int iLumi = 1; iLumi < numLumiNvtx - 1; iLumi++) {
       //get the meanNvtx for each lumi
@@ -207,39 +203,37 @@ void SiPixelPhase1EfficiencyExtras::dqmEndJob(DQMStore::IBooker& iBooker, DQMSto
     }
   }
   // Will pass if InstLumi ME exists and is not empty
-  if(createInstLumi)
-  {
+  if (createInstLumi) {
     //Get the max value of inst lumi for plot
     int yMax2 = scalLumi_v_lumi->getTProfile()->GetMaximum();
     yMax2 = yMax2 + yMax2 * .1;
-    
+
     //Book new histos
     MonitorElement* eff_v_scalLumi_barrel =
-      iBooker.book2D("hitefficiency_per_scalLumi_per_PXLayer_PXBarrel",
-                     "hitefficiency_per_scalLumi_per_PXLayer_PXBarrel; scal inst lumi E30; PXLayer",
-                     500,
-                     0,
-                     yMax2,
-                     3,
-                     .5,
-                     3.5);
+        iBooker.book2D("hitefficiency_per_scalLumi_per_PXLayer_PXBarrel",
+                       "hitefficiency_per_scalLumi_per_PXLayer_PXBarrel; scal inst lumi E30; PXLayer",
+                       500,
+                       0,
+                       yMax2,
+                       3,
+                       .5,
+                       3.5);
 
     MonitorElement* eff_v_scalLumi_forward =
-      iBooker.book2D("hitefficiency_per_scalLumi_per_PXDisk_PXForward",
-                     "hitefficiency_per_scalLumi_per_PXDisk_PXForward; scal inst lumi E30; PXDisk",
-                     500,
-                     0,
-                     yMax2,
-                     7,
-                     -3.5,
-                     3.5);
- 
+        iBooker.book2D("hitefficiency_per_scalLumi_per_PXDisk_PXForward",
+                       "hitefficiency_per_scalLumi_per_PXDisk_PXForward; scal inst lumi E30; PXDisk",
+                       500,
+                       0,
+                       yMax2,
+                       7,
+                       -3.5,
+                       3.5);
 
     //initialize variables
     int numLumiScal = int(scalLumi_v_lumi->getNbinsX());
     double scalLumi = 0.0;
     int binNumScal = 0;
-    
+
     //For loop to loop through lumisections
     for (int iLumi = 1; iLumi < numLumiScal - 1; iLumi++) {
       //get the inst lumi for each lumi
@@ -268,9 +262,8 @@ void SiPixelPhase1EfficiencyExtras::dqmEndJob(DQMStore::IBooker& iBooker, DQMSto
           eff_v_scalLumi_barrel->setBinContent(binNumScal, iLayer, eff);
         }
       }
-    } 
-  }
-  else
+    }
+  } else
     return;
 }
 
