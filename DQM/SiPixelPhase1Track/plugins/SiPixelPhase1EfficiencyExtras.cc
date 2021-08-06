@@ -62,6 +62,9 @@ public:
   explicit SiPixelPhase1EfficiencyExtras(const edm::ParameterSet& conf);
   ~SiPixelPhase1EfficiencyExtras() override;
 
+  //       virtual void analyze(const edm::Event&, const edm::EventSetup&);
+  //         //void dqmBeginRun(const edm::Run&, edm::EventSetup const&) ;
+  //           //virtual void bookHistograms(DQMStore::IBooker &, edm::Run const &, edm::EventSetup const &) override;
 protected:
   void beginRun(edm::Run const& run, edm::EventSetup const& eSetup) override;
 
@@ -107,22 +110,47 @@ void SiPixelPhase1EfficiencyExtras::dqmEndJob(DQMStore::IBooker& iBooker, DQMSto
   MonitorElement* eff_v_lumi_barrel =
       iGetter.get(effFolderName_ + "/hitefficiency_per_Lumisection_per_PXLayer_PXBarrel");
 
+  //set up some booleans that will tell us which graphs to create  
+  bool createNvtx = true;
+  bool createInstLumi = true;
+
+  //check which of the MEs exist and respond appropriately
+  if (!eff_v_lumi_forward)
+  {
+    edm::LogWarning("SiPixelPhase1EfficiencyExtras")
+        << "no hitefficiency_per_Lumisection_per_PXDisk_PXForward ME is available in " << effFolderName_ << std::endl;
+    return;
+  }
+  if (!eff_v_lumi_barrel)
+  {
+    edm::LogWarning("SiPixelPhase1EfficiencyExtras")
+        << "no hitefficiency_per_Lumisection_per_PXLayer_PXBarrel ME is available in " << effFolderName_ << std::endl;
+    return;
+  }
   if (!vtx_v_lumi) {
     edm::LogWarning("SiPixelPhase1EfficiencyExtras")
         << "no NumberOfGoodPVtxVsLS_GenTK ME is available in " << vtxFolderName_ << std::endl;
-    return;
-  } else if (!scalLumi_v_lumi) {
+    createNvtx = false;
+  }
+  if (!scalLumi_v_lumi) {
     edm::LogWarning("SiPixelPhase1EfficiencyExtras")
         << "no lumiVsLS ME is available in " << instLumiFolderName_ << std::endl;
-    return;
+    createInstLumi = false;
   }
 
-  //Get the max value of inst lumi for plot
-  int yMax2 = scalLumi_v_lumi->getTProfile()->GetMaximum();
-  yMax2 = yMax2 + yMax2 * .1;
+  //If the existing MEs are empty, set the boolean to skip booking
+  if(vtx_v_lumi && vtx_v_lumi->getEntries() == 0)
+    createNvtx = false;
+  if(scalLumi_v_lumi && scalLumi_v_lumi->getEntries() == 0)
+    createInstLumi = false;
 
-  //Book new histos
-  MonitorElement* eff_v_vtx_barrel =
+  double eff = 0.0;
+
+  //Will pass if nvtx ME exists and is not empty
+  if(createNvtx)
+  {
+    //Book new histos
+    MonitorElement* eff_v_vtx_barrel =
       iBooker.book2D("hitefficiency_per_meanNvtx_per_PXLayer_PXBarrel",
                      "hitefficiency_per_meanNvtx_per_PXLayer_PXBarrel; meanNvtx; PXLayer",
                      500,
@@ -132,7 +160,7 @@ void SiPixelPhase1EfficiencyExtras::dqmEndJob(DQMStore::IBooker& iBooker, DQMSto
                      .5,
                      3.5);
 
-  MonitorElement* eff_v_vtx_forward =
+    MonitorElement* eff_v_vtx_forward =
       iBooker.book2D("hitefficiency_per_meanNvtx_per_PXDisk_PXForward",
                      "hitefficiency_per_meanNvtx_per_PXDisk_PXForward; meanNvtx; PXDisk",
                      500,
@@ -142,7 +170,51 @@ void SiPixelPhase1EfficiencyExtras::dqmEndJob(DQMStore::IBooker& iBooker, DQMSto
                      -3.5,
                      3.5);
 
-  MonitorElement* eff_v_scalLumi_barrel =
+
+    //initialize variables
+    int numLumiNvtx = int(vtx_v_lumi->getNbinsX());
+    double nvtx = 0.0;
+    int binNumVtx = 0;
+  
+    //For loop to loop through lumisections
+    for (int iLumi = 1; iLumi < numLumiNvtx - 1; iLumi++) {
+      //get the meanNvtx for each lumi
+      nvtx = vtx_v_lumi->getBinContent(iLumi);
+
+      //Filter out useless iterations
+      if (nvtx != 0) {
+        //Grab the bin number for the nvtx
+        binNumVtx = eff_v_vtx_barrel->getTH2F()->FindBin(nvtx);
+
+        //loop through the layers
+        for (int iLayer = 1; iLayer < 8; iLayer++) {
+          //get the eff at the lumisection and layer
+          eff = eff_v_lumi_forward->getBinContent(iLumi - 1, iLayer);
+
+          //set the efficiency in the new histo
+          eff_v_vtx_forward->setBinContent(binNumVtx, iLayer, eff);
+        }
+
+        //loop through the layers
+        for (int iLayer = 1; iLayer < 5; iLayer++) {
+          //get the efficiency for each lumi at each layer
+          eff = eff_v_lumi_barrel->getBinContent(iLumi - 1, iLayer);
+
+          //set the efficiency
+          eff_v_vtx_barrel->setBinContent(binNumVtx, iLayer, eff);
+        }
+      }
+    }
+  }
+  // Will pass if InstLumi ME exists and is not empty
+  if(createInstLumi)
+  {
+    //Get the max value of inst lumi for plot
+    int yMax2 = scalLumi_v_lumi->getTProfile()->GetMaximum();
+    yMax2 = yMax2 + yMax2 * .1;
+    
+    //Book new histos
+    MonitorElement* eff_v_scalLumi_barrel =
       iBooker.book2D("hitefficiency_per_scalLumi_per_PXLayer_PXBarrel",
                      "hitefficiency_per_scalLumi_per_PXLayer_PXBarrel; scal inst lumi E30; PXLayer",
                      500,
@@ -152,7 +224,7 @@ void SiPixelPhase1EfficiencyExtras::dqmEndJob(DQMStore::IBooker& iBooker, DQMSto
                      .5,
                      3.5);
 
-  MonitorElement* eff_v_scalLumi_forward =
+    MonitorElement* eff_v_scalLumi_forward =
       iBooker.book2D("hitefficiency_per_scalLumi_per_PXDisk_PXForward",
                      "hitefficiency_per_scalLumi_per_PXDisk_PXForward; scal inst lumi E30; PXDisk",
                      500,
@@ -161,59 +233,45 @@ void SiPixelPhase1EfficiencyExtras::dqmEndJob(DQMStore::IBooker& iBooker, DQMSto
                      7,
                      -3.5,
                      3.5);
+ 
 
-  //initialize variables
-  int numLumiNvtx = int(vtx_v_lumi->getNbinsX());
-  int numLumiScal = int(scalLumi_v_lumi->getNbinsX());
-  double nvtx = 0.0;
-  double scalLumi = 0.0;
-  double eff = 0.0;
-  int binNumVtx = 0;
-  int binNumScal = 0;
+    //initialize variables
+    int numLumiScal = int(scalLumi_v_lumi->getNbinsX());
+    double scalLumi = 0.0;
+    int binNumScal = 0;
+    
+    //For loop to loop through lumisections
+    for (int iLumi = 1; iLumi < numLumiScal - 1; iLumi++) {
+      //get the inst lumi for each lumi
+      scalLumi = scalLumi_v_lumi->getBinContent(iLumi);
 
-  //For loop to loop through lumisections
-  for (int iLumi = 1; iLumi < numLumiNvtx - 1; iLumi++) {
-    //get the meanNvtx and inst lumi for each lumi
-    nvtx = vtx_v_lumi->getBinContent(iLumi);
-    scalLumi = scalLumi_v_lumi->getBinContent(iLumi);
+      //Filter out useless iterations
+      if (scalLumi != 0) {
+        //Grab the bin number for the inst lumi
+        binNumScal = eff_v_scalLumi_barrel->getTH2F()->FindBin(scalLumi);
 
-    //Filter out useless iterations
-    if (nvtx != 0 || scalLumi != 0) {
-      //Grab the bin number for the nvtx and inst lumi
-      binNumVtx = eff_v_vtx_barrel->getTH2F()->FindBin(nvtx);
-      binNumScal = eff_v_scalLumi_barrel->getTH2F()->FindBin(scalLumi);
+        //loop through the layers
+        for (int iLayer = 1; iLayer < 8; iLayer++) {
+          //get the eff at the lumisection and layer
+          eff = eff_v_lumi_forward->getBinContent(iLumi - 1, iLayer);
 
-      //loop through the layers
-      for (int iLayer = 1; iLayer < 8; iLayer++) {
-        //get the eff at the lumisection and layer
-        eff = eff_v_lumi_forward->getBinContent(iLumi - 1, iLayer);
-
-        //set the efficiency in the new histo
-        eff_v_vtx_forward->setBinContent(binNumVtx, iLayer, eff);
-
-        //Filter iLumi to be smaller than the max x value of inst lumi
-        if (iLumi <= numLumiScal) {
           //set the efficiency in the new histo
           eff_v_scalLumi_forward->setBinContent(binNumScal, iLayer, eff);
         }
-      }
 
-      //loop through the layers
-      for (int iLayer = 1; iLayer < 5; iLayer++) {
-        //get the efficiency for each lumi at each layer
-        eff = eff_v_lumi_barrel->getBinContent(iLumi - 1, iLayer);
+        //loop through the layers
+        for (int iLayer = 1; iLayer < 5; iLayer++) {
+          //get the eff at the lumisection and layer
+          eff = eff_v_lumi_barrel->getBinContent(iLumi - 1, iLayer);
 
-        //set the efficiency
-        eff_v_vtx_barrel->setBinContent(binNumVtx, iLayer, eff);
-
-        //Filter iLumi to be smaller than the max x value of inst lumi
-        if (iLumi <= numLumiScal) {
           //set the efficiency in the new histo
           eff_v_scalLumi_barrel->setBinContent(binNumScal, iLayer, eff);
         }
       }
-    }
+    } 
   }
+  else
+    return;
 }
 
 //define this as a plug-in
